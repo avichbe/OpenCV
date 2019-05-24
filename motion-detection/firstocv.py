@@ -8,7 +8,6 @@ res = '720p'
 
 
 # Set resolution for the video capture
-# Function adapted from https://kirr.co/0l6qmh
 def change_res(cap, width, height):
     cap.set(3, width)
     cap.set(4, height)
@@ -55,9 +54,10 @@ ret1, frame1 = cap.read()
 ret2, frame2 = cap.read()
 
 while True:
-    #convert the frame to gray and then blur it to reduce noises
+    #convert the frame to gray 
     frame1_gray = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
     frame2_gray = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+    #convert the frame to blur for reduce the noises
     frame1_blur = cv2.GaussianBlur(frame1_gray, (21, 21), 0)
     frame2_blur = cv2.GaussianBlur(frame2_gray, (21, 21), 0)
     #compare the frame and return the abs diffrecne - if != 0 - there is a movment
@@ -67,17 +67,18 @@ while True:
     dilated = cv2.dilate(thresh, None, iterations=2)
     masked = cv2.bitwise_and(frame1, frame1, mask=thresh)
 
-    # count the number of white pixels in the thresholded image
+    #count the number of white pixels in the thresholded image
     white_pixels = np.sum(thresh) / 255
     rows, cols = thresh.shape
     total = rows * cols
-    # after some tests i decide about 0.0001 is the best result.
+    #after some tests i decide about 0.0001 is the best result.
     if white_pixels > 0.0001 * total:
         out.write(frame1)
         #split the screen and open new window when motion detected.
         cv2.imshow("rec", diff)
 
     out.release()
+    #main screen with live video
     cv2.imshow("Main", frame1)
     frame1 = frame2
     ret, frame2 = cap.read()
